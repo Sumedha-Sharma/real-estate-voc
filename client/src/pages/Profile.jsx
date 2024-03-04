@@ -13,6 +13,8 @@ export default function Profile() {
   const[fileUploadError,setFileUploadError]=useState(false);
   const[formData,setFormData]=useState({});
   const[updateSucess,setUpdateSuccess]=useState(false);
+  const[showListingsError,setShowListingsError]=useState(false);
+  const[userListings,setUserListings]=useState([])
   const dispatch= useDispatch();
 
 
@@ -106,6 +108,20 @@ export default function Profile() {
       
     }
   }
+  const handleShowListings= async()=>{
+    try {
+      setShowListingsError(false);
+      const res= await fetch(`/api/User/listings/${currentUser._id}`);
+      const data= await res.json();
+      if(data.success==false){
+        setShowListingsError(true);
+        return;
+      }
+      setUserListings(data);
+    } catch (error) {
+      setShowListingsError(true);
+    }
+  }
   return (
     <div className='p-4 max-w-lg mx-auto'>
       <h1 className='text-5xl font-semibold text-teal-800 text-center my-7'>
@@ -118,6 +134,8 @@ export default function Profile() {
         {updateSucess?(<p className='p-3 text-center rounded-lg bg-green-500 text-white self-center my-4'>
         Information Updated Successfully!!
         </p>):''}
+
+      
       
       
       <form  onSubmit={handleSubmit} className='flex flex-col gap-6'>
@@ -150,6 +168,46 @@ export default function Profile() {
           Sign out
         </span>
       </div>
+      <button onClick={handleShowListings} className=' my-4  p-3 hover:bg-teal-600 hover:text-white  w-full text-center capitalize text-teal-600 border-2 border-teal-600 rounded-lg'>Show Listings</button>
+      {showListingsError&&(<p className='p-3 text-center rounded-lg bg-red-500 text-white self-center my-4'>
+        {showListingsError}
+        </p>)}
+        {
+          
+          userListings && userListings.length>0&&
+          <div className='flex  flex-col gap-4'>
+            <h1 className='text-center mt-7 text-2xl text-teal-900 font-semibold'>
+              Your Listings
+            </h1>
+            { userListings.map((listing)=>(
+            
+            <div key={listing._id} className="flex gap-4 items-center justify-between border rounded-lg shadow-sm p-6">
+                <Link to={`/listing/${listing._id}`}>
+                  <img  className="h-16 w-16 object-contain "src={listing.imageUrls[0]} alt=" listing cover" />
+                </Link>
+
+                <Link className=' truncate text-teal-900 capitalize font-semibold flex-1 text-lg hover:text-teal-600 ' to={`/listing/${listing._id}`}>
+                 <p  >
+                  {listing.name}
+                 </p>
+                </Link>
+                <div className="flex flex-col gap-1 items-center">
+                    <button className= ' uppercase text-red-900'>
+                        Delete
+                    </button>
+                    <button className=' uppercase text-teal-600'>
+                        edit
+                    </button>
+                </div>
+
+            </div>
+           )) }
+          </div>
+          
+          
+        }
+
+
     </div>
   )
 }
