@@ -213,9 +213,12 @@ export default function Profile() {
                     <button onClick={()=>handleListingDelete(listing._id)} className= ' uppercase text-red-900'>
                         Delete
                     </button>
+                    <Link  className=' flex justify-center'to={`/update-listing/${listing._id}`}>
                     <button className=' uppercase text-teal-600'>
                         edit
                     </button>
+                    </Link>
+                   
                 </div>
 
             </div>
