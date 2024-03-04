@@ -4,7 +4,7 @@ import { useRef} from 'react'
 import {getDownloadURL, getStorage,ref, uploadBytesResumable} from 'firebase/storage';
 import { app } from '../firebase';
 import { updateUserStart,updateUserSuccess,updateUserFaliure, deleteUserFaliure, deleteUserStart, deleteUserSuccess, signOutUserStart, signOutUserFaliure, signOutUserSuccess } from '../redux/user/userSlice';
-
+import {Link} from 'react-router-dom'
 export default function Profile() {
   const {currentUser,loading,error}= useSelector((state)=>state.user);
   const fileRef= useRef(null);
@@ -139,6 +139,7 @@ export default function Profile() {
         <button  disabled={loading}className='bg-teal-700 p-3 rounded-lg text-white hover:opacity-90 uppercase disabled:opacity-70'>
           {loading?'Loading...':'Update'}
         </button>
+        <Link  className=' rounded-lg p-3 text-center text-white bg-teal-900 uppercase my-2 hover:opacity-90' to={"/create-listing"}>  create listing</Link>
 
       </form>
       <div className='mt-5 flex justify-between'>
