@@ -122,6 +122,24 @@ export default function Profile() {
       setShowListingsError(true);
     }
   }
+  
+  const handleListingDelete= async (listingId)=>{
+    try {
+      const res= await fetch(`/api/listing/delete/${listingId}`,{
+        method: 'DELETE',
+      });
+      const data= await res.json();
+      if(data.success===false){
+        console.log(data.message);
+        return;
+      }
+      setUserListings((prev)=>prev.filter((listing)=>listing._id !==listingId));
+
+    } catch (error) {
+      console.log(error.message)
+    }
+
+  }
   return (
     <div className='p-4 max-w-lg mx-auto'>
       <h1 className='text-5xl font-semibold text-teal-800 text-center my-7'>
@@ -192,7 +210,7 @@ export default function Profile() {
                  </p>
                 </Link>
                 <div className="flex flex-col gap-1 items-center">
-                    <button className= ' uppercase text-red-900'>
+                    <button onClick={()=>handleListingDelete(listing._id)} className= ' uppercase text-red-900'>
                         Delete
                     </button>
                     <button className=' uppercase text-teal-600'>
