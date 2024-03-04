@@ -1,16 +1,35 @@
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
 import React, { useState } from 'react'
 import { app } from '../firebase';
-
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 export default function CreateListing() {
     const[files,setFiles]=useState([]);
     const[formData,setFormData]=useState({
         imageUrls:[],
+        name:'',
+        description:'',
+        address:'',
+        type:'rent',
+        bedrooms:1,
+        bathrooms:1,
+        regularPrice:5000,
+        discountPrice:0,
+        offer:false,
+        parking:false,
+        furnished:false,
+
     })
+    console.log(formData);
     const[imageUploadError,setImageUploadError]=useState(false);
     const [uploading,setUploading]=useState(false);
-    console.log(formData);
+    const[error,setError]=useState(false);
+    const[loading,setLoading]=useState(false);
+    const {currentUser}=useSelector(state=>state.user);
+    const navigate=useNavigate();
+
+
     const handleImageSubmit= (e)=>{
     if(files.length>0 &&files.length+formData.imageUrls.length<7){
         const promises=[];
@@ -72,62 +91,121 @@ export default function CreateListing() {
         imageUrls:formData.imageUrls.filter((_,i)=>i!==index),
     })
    }
+   const handleChange=(e)=>{
+    if(e.target.id==='sale'||e.target.id==='rent'){
+        setFormData({
+            ...formData,
+            type:e.target.id
+        })
+    }
+    if(e.target.id==='parking'||e.target.id==='furnished'||e.target.id==='offer'){
+        setFormData({
+            ...formData,
+            [e.target.id]:e.target.checked
+        })
+    }
+    if(e.target.type==='number'||e.target.type==='text'||e.target.type==='textarea'){
+        setFormData({
+            ...formData,
+            [e.target.id]:e.target.value
+        })
+    }
+
+   }
+   const handleSubmit= async (e)=>{
+    e.preventDefault();
+    try {
+        if(formData.imageUrls.length<1) return setError('You must upload at least one image');
+        if(+formData.regularPrice< +formData.discountPrice) return setError('Discount Price must be lower than Regular price ')
+        setLoading(true);
+        setError(false);
+        const res= await fetch('/api/listing/create',{
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json'
+            },
+            body: JSON.stringify({
+                ...formData,
+                userRef: currentUser._id,
+            }),
+        });
+        const data= await res.json();
+        setLoading(false);
+        if(data.success===false){
+            setError(data.message);
+            
+        }
+        navigate(`/listing/${data._id}`)
+
+        
+    } catch (error) {
+        setError(error.message);
+        setLoading(false);
+    }
+
+   }
   return (
     <main className='p-3 max-w-4xl mx-auto  '> 
         <h1 className='text-4xl font-semibold text-teal-800 text-center my-7'>
             Create Listing
         </h1>
-        <form className='flex flex-col sm:flex-row gap-6'>
+        {
+            error && <p className=' mx-auto p-2 max-w-96 capitalize bg-red-400 text-white text-center my-3 '>{error}</p>
+        }
+        <form  onSubmit={handleSubmit} className='flex flex-col sm:flex-row gap-6'>
             <div className='flex flex-col gap-5 flex-1'>
-                <input type="text" placeholder='Name'  className='border-2 border-teal-700 rounded-lg p-3'id="name" maxLength={62} minLength={10} required  />
-                <textarea type="text" placeholder='Description'  className='border-2 border-teal-700 rounded-lg p-3'id="description"  required  />
-                <input type="text" placeholder='Address'  className='border-2 border-teal-700 rounded-lg p-3'id="address" maxLength={62} minLength={10} required  />
+                <input value={formData.name} onChange={handleChange} type="text" placeholder='Name'  className='border-2 border-teal-700 rounded-lg p-3'id="name" maxLength={62} minLength={10} required  />
+                <textarea  value={formData.description}onChange={handleChange} type="text" placeholder='Description'  className='border-2 border-teal-700 rounded-lg p-3'id="description"  required  />
+                <input value={formData.address} onChange={handleChange} type="text" placeholder='Address'  className='border-2 border-teal-700 rounded-lg p-3'id="address" maxLength={62} minLength={10} required  />
                 <div className='flex gap-6 flex-wrap'>
                     <div className=' flex gap-2 items-center '>
-                        <input  className='w-5 h-5 bg-teal-100 text-teal-700  rounded focus:ring-2 focus:ring-teal-700 outline-none  border-2  border-teal-700' type="checkbox"  id="sale" />
+                        <input checked={formData.type==='sale'} onChange={handleChange}  className='w-5 h-5 bg-teal-100 text-teal-700  rounded focus:ring-2 focus:ring-teal-700 outline-none  border-2  border-teal-700' type="checkbox"  id="sale" />
                         <span className='text-teal-900'>Sell</span>
                     </div>
                     <div className=' flex gap-2 items-center'>
-                        <input  className='w-5 h-5 bg-teal-100 text-teal-700  rounded focus:ring-2 focus:ring-teal-700 outline-none  border-2  border-teal-700' type="checkbox"  id="rent" />
+                        <input  checked={formData.type==='rent'} onChange={handleChange} className='w-5 h-5 bg-teal-100 text-teal-700  rounded focus:ring-2 focus:ring-teal-700 outline-none  border-2  border-teal-700' type="checkbox"  id="rent" />
                         <span className='text-teal-900'>Rent</span>
                     </div>
                     <div className=' flex gap-2 items-center '>
-                        <input  className='w-5 h-5 bg-teal-100 text-teal-700  rounded focus:ring-2 focus:ring-teal-700 outline-none  border-2  border-teal-700' type="checkbox"  id="parking" />
+                        <input  checked={formData.parking} onChange={handleChange} className='w-5 h-5 bg-teal-100 text-teal-700  rounded focus:ring-2 focus:ring-teal-700 outline-none  border-2  border-teal-700' type="checkbox"  id="parking" />
                         <span className='text-teal-900'>Parking Spot</span>
                     </div>
                     <div className=' flex gap-2  items-center'>
-                        <input  className='w-5 h-5 bg-teal-100 text-teal-700  rounded focus:ring-2 focus:ring-teal-700 outline-none  border-2  border-teal-700' type="checkbox"  id="furnished" />
+                        <input checked={formData.furnished}  onChange={handleChange} className='w-5 h-5 bg-teal-100 text-teal-700  rounded focus:ring-2 focus:ring-teal-700 outline-none  border-2  border-teal-700' type="checkbox"  id="furnished" />
                         <span className='text-teal-900'>Furnished</span>
                     </div>
-                    <div className=' flex gap-2  items-center'>
-                        <input  className='w-5 h-5 bg-teal-100 text-teal-700  rounded focus:ring-2 focus:ring-teal-700 outline-none  border-2  border-teal-700' type="checkbox"  id="offer" />
-                        <span className='text-teal-900'>Offer</span>
+                    <div  className=' flex gap-2  items-center'>
+                        <input checked={formData.offer}  onChange={handleChange}  className='w-5 h-5 bg-teal-100 text-teal-700  rounded focus:ring-2 focus:ring-teal-700 outline-none  border-2  border-teal-700' type="checkbox"  id="offer" />
+                        <span  className='text-teal-900'>Offer</span>
                     </div>
                 </div>
                 <div className='flex flex-wrap gap-6'>
                     <div className=' flex gap-3 items-center'>
-                        <input className='border-2 border-teal-700 rounded-lg p-3 focus:border-teal-100 focus:border-2' type="number"  id="bedrooms" min={1} max={10} required />
+                        <input value={formData.bedrooms} onChange={handleChange} className='border-2 border-teal-700 rounded-lg p-3 focus:border-teal-100 focus:border-2' type="number"  id="bedrooms" min={1} max={10} required />
                         <p className='text-teal-900'> Beds</p>
                     </div>
                     <div className=' flex gap-3 items-center'>
-                        <input className='border-2 border-teal-700 rounded-lg p-3 focus:border-teal-100 focus:border-2' type="number"  id="bathrooms" min={1} max={10} required />
+                        <input value={formData.bathrooms} onChange={handleChange} className='border-2 border-teal-700 rounded-lg p-3 focus:border-teal-100 focus:border-2' type="number"  id="bathrooms" min={1} max={10} required />
                         <p className='text-teal-900'> Baths</p>
                     </div>
                     <div className=' flex gap-3 items-center '>
-                        <input className='border-2 border-teal-700 rounded-lg p-3 pl-5 pr-5 focus:border-teal-100 focus:border-2' type="number"  id="regularPrice" min={1} max={20000} required />
+                        <input  value={formData.regularPrice} onChange={handleChange} className='border-2 border-teal-700 rounded-lg p-3 pl-5 pr-5 focus:border-teal-100 focus:border-2' type="number"  id="regularPrice" min={5000} max={10000000000} required />
                         <div className='flex flex-col items-center'>
                             <p className='text-teal-900'> Regular Price</p>
                             <span className='text-xs'>(₹/month)</span>
                         </div>
                         
                     </div>
-                    <div className=' flex gap-3 items-center'>
-                        <input className='border-2 border-teal-700 rounded-lg p-3 pl-5 pr-5 focus:border-teal-100 focus:border-2' type="number"  id="discountPrice" min={1} max={20000} required />
+                    {
+                        formData.offer && (<div className=' flex gap-3 items-center'>
+                        <input value={formData.discountPrice} onChange={handleChange} className='border-2 border-teal-700 rounded-lg p-3 pl-5 pr-5 focus:border-teal-100 focus:border-2' type="number"  id="discountPrice" min={0} max={1000000000} required />
                         <div className='flex flex-col items-center'>
                             <p className='text-teal-900'> Discounted Price</p>
                             <span className='text-xs'>(₹/month)</span>
                         </div>
-                    </div>
+                    </div>)
+                    }
+                    
                 </div>
             </div>
             <div className='flex flex-col gap-5 flex-1'>
@@ -160,7 +238,9 @@ export default function CreateListing() {
                        </div>
                     ))
                 }
-                <button className='bg-teal-900 p-3  uppercase rounded-lg text-white hover:opacity-90 disabled:opacity-60'>Create Listing </button>
+                <button  disabled={loading||uploading} className='bg-teal-900 p-3  uppercase rounded-lg text-white hover:opacity-90 disabled:opacity-60'>
+                    {loading?'Creating....':'Create Listing'}
+                 </button>
             </div>
            
         </form>
