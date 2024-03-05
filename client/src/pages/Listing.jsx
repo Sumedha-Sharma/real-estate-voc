@@ -86,7 +86,7 @@ export default function Listing() {
 
             </p>
             <p className='m-l-2  bg-teal-600 text-white mt-4 rounded-lg max-w-sm justify-center  py-3 text-2xl  font-semibold flex gap-6 items-center  '>
-            <FaMoneyBill className=''/> {listing.offer?  listing.discountPrice.toLocaleString('hi-IN',{style:"currency", currency:"INR"}): listing.regularPrice.toLocaleString('hi-IN',{style:"currency", currency:"INR"})}
+            <FaMoneyBill className=''/> {listing.offer?  listing.discountPrice.toLocaleString('hi-IN',{style:"currency", currency:"INR"}).replace(/\.?0+$/, ''): listing.regularPrice.toLocaleString('hi-IN',{style:"currency", currency:"INR"}).replace(/\.?0+$/, '')}
             {listing.type==='rent'&&' / month'}
             </p>
             <p className=' capitalize flex items-center mt-6 gap-2  text-xl'>
@@ -100,7 +100,7 @@ export default function Listing() {
                 {
                 listing.offer &&(
                     <p className='bg-teal-900 w-full max-w-[200px] text-white text-center p-1 rounded-md'>
-                        ₹{(+listing.regularPrice) - (+listing.discountPrice)}
+                        ₹{(+listing.regularPrice) - (+listing.discountPrice)} OFF
                     </p>
                 )
                 }

@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
+import ListingItem from '../components/ListingItem';
+import { list } from 'firebase/storage';
 
 
 export default function Search() {
@@ -191,8 +193,29 @@ export default function Search() {
                 <button className='p-3 bg-teal-700 rounded-lg  text-white uppercase hover:opacity-90'> Search</button>
             </form>
         </div>
-        <div className="">
+        <div className="flex-1">
            <h1 className='mt-5 p-3 text-4xl font-semibold border-b-2  text-teal-900'> Listing Results</h1>
+           <div className='flex p-7 gap-4 flex-wrap'>
+           {!loading&& listings.length===0 &&(
+            <p className='text-3xl text-teal-900'>No Listing Found !!!!</p>
+           )}
+           {
+            loading &&(
+                <p className='text-3xl text-teal-700 text-center w-full'>
+                    Loading....
+                </p>
+            )
+           }
+           {
+            !loading
+            &&listings
+            &&listings.map((listing)=>(
+                <ListingItem key={listing._id} listing={listing}/>
+            )
+
+            )
+           }
+           </div>
         </div>
     </div>
   )
