@@ -159,23 +159,23 @@ export default function CreateListing() {
                 <input value={formData.address} onChange={handleChange} type="text" placeholder='Address'  className='border-2 border-teal-700 rounded-lg p-3'id="address" maxLength={62} minLength={10} required  />
                 <div className='flex gap-6 flex-wrap'>
                     <div className=' flex gap-2 items-center '>
-                        <input checked={formData.type==='sale'} onChange={handleChange}  className='w-5 h-5 bg-teal-100 text-teal-700  rounded focus:ring-2 focus:ring-teal-700 outline-none  border-2  border-teal-700' type="checkbox"  id="sale" />
+                        <input checked={formData.type==='sale'} onChange={handleChange}  className='w-5 h-5 bg-teal-100 text-teal-700  rounded focus:ring-2 focus:ring-teal-700 outline-none  border-2   accent-teal-600  border-teal-700' type="checkbox"  id="sale" />
                         <span className='text-teal-900'>Sell</span>
                     </div>
                     <div className=' flex gap-2 items-center'>
-                        <input  checked={formData.type==='rent'} onChange={handleChange} className='w-5 h-5 bg-teal-100 text-teal-700  rounded focus:ring-2 focus:ring-teal-700 outline-none  border-2  border-teal-700' type="checkbox"  id="rent" />
+                        <input  checked={formData.type==='rent'} onChange={handleChange} className='w-5 h-5 bg-teal-100 text-teal-700  rounded focus:ring-2 focus:ring-teal-700 outline-none  border-2  accent-teal-600  border-teal-700' type="checkbox"  id="rent" />
                         <span className='text-teal-900'>Rent</span>
                     </div>
                     <div className=' flex gap-2 items-center '>
-                        <input  checked={formData.parking} onChange={handleChange} className='w-5 h-5 bg-teal-100 text-teal-700  rounded focus:ring-2 focus:ring-teal-700 outline-none  border-2  border-teal-700' type="checkbox"  id="parking" />
+                        <input  checked={formData.parking} onChange={handleChange} className='w-5 h-5 bg-teal-100 text-teal-700  rounded focus:ring-2 focus:ring-teal-700 outline-none  border-2   accent-teal-600 border-teal-700' type="checkbox"  id="parking" />
                         <span className='text-teal-900'>Parking Spot</span>
                     </div>
                     <div className=' flex gap-2  items-center'>
-                        <input checked={formData.furnished}  onChange={handleChange} className='w-5 h-5 bg-teal-100 text-teal-700  rounded focus:ring-2 focus:ring-teal-700 outline-none  border-2  border-teal-700' type="checkbox"  id="furnished" />
+                        <input checked={formData.furnished}  onChange={handleChange} className='w-5 h-5 bg-teal-100 text-teal-700  rounded focus:ring-2 focus:ring-teal-700 outline-none  border-2   accent-teal-600 border-teal-700' type="checkbox"  id="furnished" />
                         <span className='text-teal-900'>Furnished</span>
                     </div>
                     <div  className=' flex gap-2  items-center'>
-                        <input checked={formData.offer}  onChange={handleChange}  className='w-5 h-5 bg-teal-100 text-teal-700  rounded focus:ring-2 focus:ring-teal-700 outline-none  border-2  border-teal-700' type="checkbox"  id="offer" />
+                        <input checked={formData.offer}  onChange={handleChange}  className='w-5 h-5 bg-teal-100 text-teal-700  rounded focus:ring-2 focus:ring-teal-700 outline-none  border-2   accent-teal-600 border-teal-700' type="checkbox"  id="offer" />
                         <span  className='text-teal-900'>Offer</span>
                     </div>
                 </div>
