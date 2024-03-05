@@ -4,6 +4,7 @@ import {Swiper ,SwiperSlide} from 'swiper/react'
 import SwiperCore from 'swiper';
 import { Navigation } from 'swiper/modules';
 import 'swiper/css/bundle';
+import { FaBath, FaBed, FaChair, FaMapMarkerAlt, FaMoneyBill, FaParking, FaShare } from 'react-icons/fa';
 
 export default function Listing() {
     SwiperCore.use([Navigation]);
@@ -11,6 +12,7 @@ export default function Listing() {
     const[listing,setListing]=useState(null);
     const[loading,setLoading]=useState(false);
     const [error,setError]=useState(false);
+    const[copied,setCopied]=useState(false);
     const params=useParams();
 
     useEffect(()=>{
@@ -58,6 +60,75 @@ export default function Listing() {
                 )
             }
         </Swiper>
+        <div className='fixed top-[13%] right-[3%] z-10 border rounded-full w-12 h-12 flex justify-center items-center bg-teal-100 cursor-pointer'>
+            <FaShare className='text-teal-500'
+                onClick={()=>{
+                    navigator.clipboard.writeText(window.location.href);
+                    setCopied(true);
+                    setTimeout(()=>{
+                        setCopied(false);
+                    },2000);
+                }}
+            />
+        </div>
+        {copied &&(
+            <p className='fixed  capitalize top-[23%] right-[5%] z-10 rounded-md bg-teal-100 p-3'>
+                Link copied!
+            </p>
+        )}
+        <div className="flex flex-col max-w-4xl mx-auto p-2 my-8 gap-6">
+            <p className=' capitalize text-5xl font-semibold text-teal-900'>
+              {listing.name}
+
+            </p>
+            <p className='m-l-2  bg-teal-600 text-white mt-4 rounded-lg max-w-sm justify-center  py-3 text-2xl  font-semibold flex gap-6 items-center  '>
+            <FaMoneyBill className=''/> {listing.offer?  listing.discountPrice.toLocaleString('hi-IN',{style:"currency", currency:"INR"}): listing.regularPrice.toLocaleString('hi-IN',{style:"currency", currency:"INR"})}
+            {listing.type==='rent'&&' / month'}
+            </p>
+            <p className=' capitalize flex items-center mt-6 gap-2  text-xl'>
+              <FaMapMarkerAlt className='text-green-700' />
+              {listing.address}
+            </p>
+            <div className=" flex gap-4">
+                <p className='bg-red-900 w-full max-w-[200px] text-white text-center p-1 rounded-md'>
+                    {listing.type==='rent'?'For Rent':'For Sale'}
+                </p>
+                {
+                listing.offer &&(
+                    <p className='bg-teal-900 w-full max-w-[200px] text-white text-center p-1 rounded-md'>
+                        ₹{(+listing.regularPrice) - (+listing.discountPrice)}
+                    </p>
+                )
+                }
+            </div>
+            <p className='text-slate-800 text-justify p-2'>
+         <span className='font-semibold text-black  '>Decription - </span>{listing.description}
+        </p>
+
+        <ul className=' text-teal-900 font-semibold text-sm flex items-center gap-4 sm:gap-8 flex-wrap'>
+            <li className='flex items-center capitalize gap-2 whitespace-nowrap'>
+                <FaBed className='text-lg'/>
+               { listing.bedrooms > 1
+                  ? `${listing.bedrooms} beds `
+                  : `${listing.bedrooms} bed `}
+            </li>
+            <li className='flex items-center capitalize gap-2 whitespace-nowrap'>
+                <FaBath className='text-lg'/>
+               { listing.bathrooms > 1
+                  ? `${listing.bathrooms} baths `
+                  : `${listing.bathrooms} bath `}
+            </li>
+            <li className='flex items-center capitalize gap-2 whitespace-nowrap'>
+            <FaParking className='text-lg' />
+                {listing.parking ? 'Parking spot' : 'No Parking'}
+            </li>
+            <li className='flex items-center capitalize gap-2 whitespace-nowrap'>
+            <FaChair className='text-lg' />
+                {listing.furnished ? 'Furnished' : 'Unfurnished'}
+            </li>
+        </ul>
+        </div>
+       
             
             </div>
         }
