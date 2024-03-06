@@ -118,6 +118,20 @@ export default function Search() {
         navigate(`/search?${searchQuery}`);
     }
 
+    const onShowMoreClick = async () => {
+        const numberOfListings = listings.length;
+        const startIndex = numberOfListings;
+        const urlParams = new URLSearchParams(location.search);
+        urlParams.set('startIndex', startIndex);
+        const searchQuery = urlParams.toString();
+        const res = await fetch(`/api/listing/get?${searchQuery}`);
+        const data = await res.json();
+        if (data.length < 9) {
+          setShowMore(false);
+        }
+        setListings([...listings, ...data]);
+      };
+
   return (
     <div className='flex gap-4 flex-col md:flex-row'>
         <div className="flex gap-4 p-7 border-b-2 md:border-r-2 md:min-h-screen">
@@ -215,6 +229,14 @@ export default function Search() {
 
             )
            }
+           {showMore && (
+            <button
+              onClick={onShowMoreClick}
+              className='text-white mt-4 rounded-lg bg-teal-600 hover:opacity-90 p-5 text-center w-full'
+            >
+              Show more
+            </button>
+          )}
            </div>
         </div>
     </div>
