@@ -188,7 +188,7 @@ export default function Profile() {
       </div>
       <button onClick={handleShowListings} className=' my-4  p-3 hover:bg-teal-600 hover:text-white  w-full text-center capitalize text-teal-600 border-2 border-teal-600 rounded-lg'>Show Listings</button>
       {showListingsError&&(<p className='p-3 text-center rounded-lg bg-red-500 text-white self-center my-4'>
-        {showListingsError}
+      {showListingsError ? 'Error showing listings' : ''}
         </p>)}
         {
           
